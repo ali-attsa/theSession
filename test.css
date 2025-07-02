@@ -1,0 +1,31 @@
+div{
+    background-color:black;
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    z-index: 1000;
+    transition: background-color 0.5s ease; 
+    animation: upAndDown alternate 2s infinite;
+    border-radius: 50%
+}
+
+body{
+    height: 200vh
+}
+
+button {
+    top: 10px;
+    left: 10px;
+    z-index: 1001;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+@keyframes upAndDown {
+    0% { top: 150px;}
+    100% { top: 200px; }
+}

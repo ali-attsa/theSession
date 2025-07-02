@@ -1,35 +1,67 @@
 // main.js
 
-// Create the worker
 const worker = new Worker("prime-worker.js");
-const color = document.querySelector("#color");
-const slow = document.querySelector("#slow");
-const time = document.querySelector("#time");
+
+const colorButton = document.querySelector("#color");
+const slowButton = document.querySelector("#slow");
+const timeButton = document.querySelector("#time");
+const resultContainer = document.querySelector("#res");
 const timeMessage = document.querySelector("#time-message");
+const slowWithoutWorkerButton = document.querySelector("#slow-without-worker");
 
-color.addEventListener("click", () => {
-  const backGroundColor = document.body.style.backgroundColor;
-  document.body.style.backgroundColor =
-    backGroundColor === "red" ? "blue" : "red";
+
+// Toggle background color between red and blue
+colorButton.addEventListener("click", () => {
+  const currentColor = document.body.style.backgroundColor;
+  document.body.style.backgroundColor = currentColor === "red" ? "blue" : "red";
 });
-slow.addEventListener("click", () => {
 
- worker.postMessage(1000000); // Calculate primes up to 100,000
-
-// Listen for results from the worker
-worker.onmessage = function (e) {
-  console.log("Primes:", e.data); // List of primes
-};
-
-// Handle any errors
-worker.onerror = function (error) {
-  console.error("Worker error:", error.message);
-};
+// Start a CPU-heavy task in the worker
+slowButton.addEventListener("click", () => {
+  resultContainer.innerText = "Calculating...";
+  worker.postMessage(1e7); // Sends the upper limit for prime calculation
 });
-time.addEventListener("click", () => {
-    console.log("test" )
-  timeMessage.innerText = "test "
+
+timeButton.addEventListener("click", () => {
+  console.log("test");
+  timeMessage.innerText = "Processing...";
   setTimeout(() => {
-  timeMessage.innerText = "completed"
+    timeMessage.innerText = "completed";
   }, 2000);
-})
+});
+
+worker.onmessage = (event) => {
+  alert("Worker finished processing");
+  resultContainer.innerText = `Prime counted: ${event.data} `;
+};
+
+worker.onerror = (error) => {
+  console.error("Worker error:", error.message);
+  resultContainer.innerText = "Error in worker.";
+};
+
+
+// Check if a number is prime
+function slow(){
+function isPrime(num) {
+  if (num < 2) return false;
+  for (let i = 2; i <= Math.sqrt(num); i++) {
+    if (num % i === 0) return false;
+  }
+  return true;
+}
+
+// Handle messages from main thread
+  const max = 1e7;
+  const primes = [];
+  for (let i = 2; i <= max; i++) {
+    if (isPrime(i)) primes.push(i);
+  }
+  postMessage(primes); // Send result back to main thread
+  
+}  
+slowWithoutWorkerButton.addEventListener("click", () => {
+  resultContainer.innerText = "Calculating without worker...";
+  slow();
+}
+)
